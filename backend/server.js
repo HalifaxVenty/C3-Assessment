@@ -18,7 +18,10 @@ mongoose.connect(process.env.MONGO_URI, {
 const UserSchema = new mongoose.Schema({
   name: String,
   height: Number,
-  email: String,
+  email: {
+    type: String,
+    match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -27,13 +30,21 @@ const User = mongoose.model("User", UserSchema);
 app.post("/api/users", async (req, res) => {
   try {
     const { name, height, email } = req.body;
-    const newUser = new User({ name, height, email });
-    await newUser.save();
 
-    // Calculate average height
-    const users = await User.find();
-    const avgHeight =
-      users.reduce((acc, user) => acc + user.height, 0) / users.length;
+      // Check if the email already exists in the database
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists. Please use a different email." });
+      }
+
+      // Create a new user if email is unique
+      const newUser = new User({ name, height, email });
+      await newUser.save();
+
+      // Calculate average height
+      const users = await User.find();
+      const avgHeight =
+        users.reduce((acc, user) => acc + user.height, 0) / users.length;
 
     res.json({ success: true, avgHeight });
   } catch (error) {
@@ -41,7 +52,7 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
-// API to get average height
+// get average height
 app.get("/api/average-height", async (req, res) => {
   const users = await User.find();
   const avgHeight =
@@ -49,5 +60,6 @@ app.get("/api/average-height", async (req, res) => {
   res.json({ avgHeight });
 });
 
+//PORT 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
