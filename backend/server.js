@@ -18,7 +18,10 @@ mongoose.connect(process.env.MONGO_URI, {
 const UserSchema = new mongoose.Schema({
   name: String,
   height: Number,
-  email: String,
+  email: {
+    type: String,
+    match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -27,6 +30,14 @@ const User = mongoose.model("User", UserSchema);
 app.post("/api/users", async (req, res) => {
   try {
     const { name, height, email } = req.body;
+
+    // Check if the email already exists in the database
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already exists. Please use a different email." });
+    }
+
+    // Create a new user if email is unique
     const newUser = new User({ name, height, email });
     await newUser.save();
 
