@@ -10,10 +10,12 @@ const App = () => {
   const [formData, setFormData] = useState({ name: "", height: "", email: "" });
   const [avgHeight, setAvgHeight] = useState(null);
 
+  //Update from when user types in form
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  //Submission handling
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,17 +62,21 @@ return (
       </Toolbar>
     </AppBar>
 
-    {/* Main content with centered form */}
+    {/* Main content*/}
+
+    {/*Text above form*/}
     <Box className="form-container">
-      <Typography variant="h3" className="form-title">
+      <Typography variant="h3" className="title-text">
         WELCOME TO H8TND
       </Typography>
 
+   {/* Form */}
       <Box className="form-box">
         <Typography variant="h5" align="center" gutterBottom className="form-title">
-          H8TND SUBMISSION FORM
+          SUBMISSION FORM
         </Typography>
 
+        {/* Name Input Field */}
         <form onSubmit={handleSubmit}>
           <TextField
             label="Name"
@@ -82,6 +88,7 @@ return (
             className="text-field"
           />
 
+        {/* Email Input Field */}
           <TextField
             label="Email"
             name="email"
@@ -92,6 +99,7 @@ return (
             className="text-field"
           />
 
+        {/* Height Input Field */}
           <TextField
             label="Height (in cm)"
             name="height"
@@ -103,16 +111,13 @@ return (
             className="text-field"
           />
 
+        {/* Submit Button */}
           <Button type="submit" variant="contained" className="submit-button">
             Submit
           </Button>
         </form>
 
-        {avgHeight && (
-          <Typography variant="body1" color="textSecondary" sx={{ marginTop: 2, color: 'black' }}>
-            The average height of all users is: {avgHeight} cm
-          </Typography>
-        )}
+
       </Box>
     </Box>
 
@@ -121,11 +126,6 @@ return (
       <Typography variant="body2" className="footer-left">
         H8TND 2025
       </Typography>
-      <Box className="footer-right">
-        <Typography variant="body2">
-          Tell us how tall you are and we'll see how you stack up
-        </Typography>
-      </Box>
     </Box>
   </>
   );
